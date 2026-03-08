@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="id" x-data="{ menuOpen: false, activeSection: 'beranda' }">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>YPMD Papua — Yayasan Pengembangan Masyarakat Desa</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Alpine.js -->
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              50:  '#f0f7f2',
+              100: '#d9ede0',
+              200: '#b4dbc3',
+              300: '#82c19e',
+              400: '#4fa174',
+              500: '#2d8057',   /* main brand green */
+              600: '#1f6642',
+              700: '#1a5236',
+              800: '#163f2b',
+              900: '#0f2b1d',
+            },
+            accent: {
+              50:  '#fdf8ee',
+              100: '#f9eccc',
+              200: '#f2d68d',
+              300: '#e8bc4f',
+              400: '#c9972a',   /* gold accent */
+              500: '#a67820',
+            },
+            neutral: {
+              50:  '#fafafa',
+              100: '#f4f4f4',
+              200: '#e8e8e8',
+              300: '#d0d0d0',
+              400: '#a0a0a0',
+              500: '#707070',
+              600: '#505050',
+              700: '#383838',
+              800: '#242424',
+              900: '#141414',
+            }
+          },
+          fontFamily: {
+            display: ['Lora', 'Georgia', 'serif'],
+            body: ['"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          fontSize: {
+            xs:   ['14px', { lineHeight: '1.5' }],
+            sm:   ['14px', { lineHeight: '1.6' }],
+            base: ['15px', { lineHeight: '1.75' }],
+            lg:   ['17px', { lineHeight: '1.7' }],
+            xl:   ['19px', { lineHeight: '1.6' }],
+            '2xl':['22px', { lineHeight: '1.5' }],
+            '3xl':['28px', { lineHeight: '1.3' }],
+            '4xl':['34px', { lineHeight: '1.2' }],
+            '5xl':['42px', { lineHeight: '1.1' }],
+          },
+          boxShadow: {
+            'card': '0 2px 12px rgba(0,0,0,0.08)',
+            'card-hover': '0 6px 24px rgba(0,0,0,0.12)',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    html { scroll-behavior: smooth; font-size: 15px; }
+    body { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 15px; }
+    h1, h2, h3, .font-display { font-family: 'Lora', Georgia, serif; }
+
+    /* Timeline */
+    .timeline-wrap {
+      position: relative;
+    }
+    .timeline-wrap::before {
+      content: '';
+      position: absolute;
+      left: 19px;
+      top: 20px;
+      bottom: 20px;
+      width: 2px;
+      background: linear-gradient(to bottom, #2d8057 0%, #e8e8e8 100%);
+      z-index: 0;
+    }
+    .timeline-item {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+      position: relative;
+      z-index: 1;
+    }
+    .timeline-icon {
+      flex-shrink: 0;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      z-index: 2;
+    }
+    .timeline-body {
+      flex: 1;
+      padding-bottom: 32px;
+      padding-top: 8px;
+    }
+    .timeline-item:last-child .timeline-body {
+      padding-bottom: 0;
+    }
+
+    /* Smooth nav underline */
+    .nav-link {
+      position: relative;
+    }
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: #2d8057;
+      transition: width 0.25s ease;
+    }
+    .nav-link:hover::after,
+    .nav-link.active::after {
+      width: 100%;
+    }
+
+    /* Fade-in on scroll */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Card hover */
+    .card-hover {
+      transition: box-shadow 0.2s ease, transform 0.2s ease;
+    }
+    .card-hover:hover {
+      box-shadow: 0 6px 24px rgba(0,0,0,0.12);
+      transform: translateY(-2px);
+    }
+  </style>
+</head>
+
+<body class="bg-white text-neutral-800" x-data="{ topbarVisible: true, modalVisible: true }">
+
+  <!-- ═══════════════════════════════ DISCLAIMER MODAL ═══════════════════════════════ -->
+  <div
+    x-show="modalVisible"
+    x-transition:enter="transition ease-out duration-300"
+    x-transition:enter-start="opacity-0"
+    x-transition:enter-end="opacity-100"
+    x-transition:leave="transition ease-in duration-200"
+    x-transition:leave-start="opacity-100"
+    x-transition:leave-end="opacity-0"
+    class="fixed inset-0 z-[9999] flex items-center justify-center px-4"
+    style="display: none;"
+  >
+    <!-- Backdrop -->
+    <div class="absolute inset-0 bg-neutral-900/60 backdrop-blur-sm" @click="modalVisible = false"></div>
+
+    <!-- Modal Box -->
+    <div
+      x-show="modalVisible"
+      x-transition:enter="transition ease-out duration-300"
+      x-transition:enter-start="opacity-0 scale-95 translate-y-4"
+      x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+      x-transition:leave="transition ease-in duration-200"
+      x-transition:leave-start="opacity-100 scale-100"
+      x-transition:leave-end="opacity-0 scale-95"
+      class="relative bg-white w-full max-w-lg shadow-xl z-10"
+      style="display: none;"
+    >
+      <!-- Modal Header -->
+      <div class="bg-amber-50 border-b border-amber-200 px-6 py-4 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 bg-amber-400 flex items-center justify-center flex-shrink-0">
+            <i class="fa-solid fa-triangle-exclamation text-white text-sm"></i>
+          </div>
+          <span class="font-semibold text-amber-800 text-sm uppercase tracking-wider">Disclaimer</span>
+        </div>
+        <button
+          @click="modalVisible = false"
+          class="w-8 h-8 flex items-center justify-center text-neutral-400 hover:text-neutral-700 hover:bg-neutral-100 transition-colors"
+          aria-label="Tutup"
+        >
+          <i class="fa-solid fa-xmark text-base"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="px-6 py-6">
+        <h2 class="font-display font-bold text-neutral-900 text-lg mb-3">Draft Desain Penawaran</h2>
+        <p class="text-neutral-600 text-sm leading-relaxed mb-4">
+          Halaman ini merupakan <strong class="text-neutral-800">draft desain penawaran</strong> yang dibuat berdasarkan hasil analisa dan riset tim pengembang. Seluruh konten, struktur, dan tampilan yang tersaji bersifat <em>prototipe</em> dan belum merupakan produk final.
+        </p>
+        <ul class="text-sm text-neutral-500 space-y-2 mb-5">
+          <li class="flex items-start gap-2">
+            <i class="fa-solid fa-circle-check text-primary-500 mt-0.5 flex-shrink-0"></i>
+            <span>Informasi bersumber dari data publik yang tersedia dan dapat berubah sesuai arahan klien.</span>
+          </li>
+          <li class="flex items-start gap-2">
+            <i class="fa-solid fa-circle-check text-primary-500 mt-0.5 flex-shrink-0"></i>
+            <span>Gambar menggunakan placeholder dan akan diganti dengan aset resmi dari lembaga.</span>
+          </li>
+          <li class="flex items-start gap-2">
+            <i class="fa-solid fa-circle-check text-primary-500 mt-0.5 flex-shrink-0"></i>
+            <span>Desain ini hak cipta tim pengembang dan dibuat khusus sebagai bahan presentasi penawaran.</span>
+          </li>
+        </ul>
+
+        <!-- Powered by -->
+        <div class="border-t border-neutral-100 pt-4 flex items-center justify-between">
+          <span class="text-xs text-neutral-400">Dikembangkan oleh:</span>
+          <a href="https://nokensoft.com" target="_blank" rel="noopener" class="flex items-center gap-2 text-primary-600 hover:text-primary-700 transition-colors">
+            <i class="fa-solid fa-code text-sm"></i>
+            <span class="font-semibold text-sm">Nokensoft.com</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="px-6 pb-5">
+        <button
+          @click="modalVisible = false"
+          class="w-full bg-primary-500 hover:bg-primary-600 text-white font-semibold text-sm py-3 transition-colors"
+        >
+          Saya Mengerti, Lanjutkan
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════ TOPBAR DISCLAIMER ═══════════════════════════════ -->
+  <div
+    x-show="topbarVisible"
+    x-transition:leave="transition ease-in duration-200"
+    x-transition:leave-start="opacity-100 max-h-20"
+    x-transition:leave-end="opacity-0 max-h-0"
+    class="bg-amber-400 text-amber-900 overflow-hidden"
+    style="display: none;"
+  >
+    <div class="max-w-6xl mx-auto px-4 py-2.5 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3 min-w-0">
+        <i class="fa-solid fa-triangle-exclamation flex-shrink-0 text-amber-800 text-sm"></i>
+        <p class="text-xs font-medium leading-snug">
+          <strong>Draft Desain Penawaran</strong> — Halaman ini merupakan prototipe yang dibuat berdasarkan hasil analisa tim pengembang dan belum merupakan produk final.
+          <a href="https://nokensoft.com" target="_blank" rel="noopener" class="underline font-bold hover:text-amber-950 ml-1">
+            Powered by Nokensoft.com
+          </a>
+        </p>
+      </div>
+      <button
+        @click="topbarVisible = false"
+        class="flex-shrink-0 w-6 h-6 flex items-center justify-center text-amber-800 hover:text-amber-950 hover:bg-amber-500/50 transition-colors"
+        aria-label="Tutup notifikasi"
+      >
+        <i class="fa-solid fa-xmark text-sm"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════ HEADER / NAV ═══════════════════════════════ -->
+  <header class="sticky top-0 z-50 bg-white shadow-md border-b border-neutral-200">
+    <nav class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+
+      <!-- Logo + Title -->
+      <a href="#beranda" class="flex items-center gap-3 flex-shrink-0">
+        <div class="w-9 h-9 bg-primary-500 flex items-center justify-center">
+          <i class="fa-solid fa-seedling text-white text-sm"></i>
+        </div>
+        <div class="hidden sm:block">
+          <span class="font-display font-bold text-primary-700 text-base leading-tight block">YPMD Papua</span>
+          <span class="text-neutral-400 text-xs leading-none">Yayasan Pengembangan Masyarakat Desa</span>
+        </div>
+      </a>
+
+      <!-- Desktop Nav -->
+      <ul class="hidden md:flex items-center gap-8">
+        <li><a href="#beranda"   class="nav-link text-sm font-medium text-neutral-600 hover:text-primary-600 transition-colors">Beranda</a></li>
+        <li><a href="#profil"    class="nav-link text-sm font-medium text-neutral-600 hover:text-primary-600 transition-colors">Profil</a></li>
+        <li><a href="#sejarah"   class="nav-link text-sm font-medium text-neutral-600 hover:text-primary-600 transition-colors">Sejarah</a></li>
+        <li><a href="#program"   class="nav-link text-sm font-medium text-neutral-600 hover:text-primary-600 transition-colors">Program</a></li>
+        <li><a href="#tokoh"     class="nav-link text-sm font-medium text-neutral-600 hover:text-primary-600 transition-colors">Tokoh</a></li>
+        <li><a href="#kontak"    class="nav-link text-sm font-medium text-neutral-600 hover:text-primary-600 transition-colors">Kontak</a></li>
+      </ul>
+
+      <!-- Mobile: Logo center + Hamburger right -->
+      <div class="md:hidden absolute left-1/2 -translate-x-1/2 flex items-center gap-2">
+        <div class="w-7 h-7 bg-primary-500 flex items-center justify-center">
+          <i class="fa-solid fa-seedling text-white text-xs"></i>
+        </div>
+        <span class="font-display font-bold text-primary-700 text-sm">YPMD Papua</span>
+      </div>
+
+      <!-- Hamburger (mobile) -->
+      <button
+        class="md:hidden ml-auto text-neutral-600 focus:outline-none"
+        @click="menuOpen = !menuOpen"
+        aria-label="Toggle menu"
+      >
+        <i class="fa-solid text-lg" :class="menuOpen ? 'fa-xmark' : 'fa-bars'"></i>
+      </button>
+    </nav>
+
+    <!-- Mobile Dropdown Menu -->
+    <div
+      x-show="menuOpen"
+      x-transition:enter="transition ease-out duration-200"
+      x-transition:enter-start="opacity-0 -translate-y-2"
+      x-transition:enter-end="opacity-100 translate-y-0"
+      x-transition:leave="transition ease-in duration-150"
+      x-transition:leave-start="opacity-100"
+      x-transition:leave-end="opacity-0"
+      class="md:hidden bg-white border-t border-neutral-200 shadow-md"
+    >
+      <ul class="flex flex-col py-2">
+        <li><a href="#beranda"  @click="menuOpen=false" class="block px-6 py-3 text-sm text-neutral-700 hover:bg-neutral-50 hover:text-primary-600">Beranda</a></li>
+        <li><a href="#profil"   @click="menuOpen=false" class="block px-6 py-3 text-sm text-neutral-700 hover:bg-neutral-50 hover:text-primary-600">Profil</a></li>
+        <li><a href="#sejarah"  @click="menuOpen=false" class="block px-6 py-3 text-sm text-neutral-700 hover:bg-neutral-50 hover:text-primary-600">Sejarah</a></li>
+        <li><a href="#program"  @click="menuOpen=false" class="block px-6 py-3 text-sm text-neutral-700 hover:bg-neutral-50 hover:text-primary-600">Program</a></li>
+        <li><a href="#tokoh"    @click="menuOpen=false" class="block px-6 py-3 text-sm text-neutral-700 hover:bg-neutral-50 hover:text-primary-600">Tokoh</a></li>
+        <li><a href="#kontak"   @click="menuOpen=false" class="block px-6 py-3 text-sm text-neutral-700 hover:bg-neutral-50 hover:text-primary-600">Kontak</a></li>
+      </ul>
+    </div>
+  </header>
+
+
+  <main>
+
+    <!-- ═══════════════════════════════ HERO / BERANDA ═══════════════════════════════ -->
+    <section id="beranda" class="bg-white">
+      <div class="max-w-6xl mx-auto px-6 py-20 md:py-28 grid md:grid-cols-2 gap-12 items-center">
+
+        <div class="fade-in">
+          <span class="inline-block text-xs font-semibold tracking-widest uppercase text-primary-500 mb-4">
+            <i class="fa-solid fa-leaf mr-2"></i>Berdiri sejak 1984 · Jayapura, Papua
+          </span>
+          <h1 class="text-3xl md:text-5xl font-display font-bold text-neutral-900 leading-tight mb-5">
+            Yayasan Pengembangan<br/>
+            <span class="text-primary-600">Masyarakat Desa</span><br/>
+            Papua
+          </h1>
+          <p class="text-neutral-500 text-base leading-relaxed mb-8 max-w-md">
+            Lembaga masyarakat sipil yang mendampingi komunitas adat Papua menuju kemandirian ekonomi, kelestarian lingkungan, dan penguatan hak-hak dasar masyarakat desa.
+          </p>
+          <div class="flex flex-wrap gap-3">
+            <a href="#program" class="bg-primary-500 text-white px-6 py-2.5 text-sm font-semibold hover:bg-primary-600 transition-colors shadow-card">
+              Lihat Program
+            </a>
+            <a href="#profil" class="border border-neutral-300 text-neutral-700 px-6 py-2.5 text-sm font-semibold hover:border-primary-400 hover:text-primary-600 transition-colors">
+              Tentang Kami
+            </a>
+          </div>
+        </div>
+
+        <div class="fade-in">
+          <img
+            src="https://placehold.co/600x400/EEE/31343C"
+            alt=""
+            class="w-full object-cover shadow-card"
+          />
+        </div>
+      </div>
+
+      <!-- Statistik Strip -->
+      <div class="border-t border-neutral-200 bg-neutral-50">
+        <div class="max-w-6xl mx-auto px-6 py-8 grid grid-cols-2 md:grid-cols-4 gap-6">
+          <div class="text-center fade-in">
+            <div class="text-3xl font-display font-bold text-primary-600">1984</div>
+            <div class="text-xs text-neutral-500 mt-1 uppercase tracking-wider">Tahun Berdiri</div>
+          </div>
+          <div class="text-center fade-in">
+            <div class="text-3xl font-display font-bold text-primary-600">40+</div>
+            <div class="text-xs text-neutral-500 mt-1 uppercase tracking-wider">Tahun Berkarya</div>
+          </div>
+          <div class="text-center fade-in">
+            <div class="text-3xl font-display font-bold text-accent-400">10+</div>
+            <div class="text-xs text-neutral-500 mt-1 uppercase tracking-wider">Tahun Ekspor Kakao</div>
+          </div>
+          <div class="text-center fade-in">
+            <div class="text-3xl font-display font-bold text-accent-400">2</div>
+            <div class="text-xs text-neutral-500 mt-1 uppercase tracking-wider">Wilayah Kerja</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ═══════════════════════════════ PROFIL LEMBAGA ═══════════════════════════════ -->
+    <section id="profil" class="py-20 bg-white">
+      <div class="max-w-6xl mx-auto px-6">
+
+        <div class="mb-12 fade-in">
+          <span class="text-xs font-semibold tracking-widest uppercase text-primary-500">
+            <i class="fa-solid fa-building-columns mr-2"></i>Profil Lembaga
+          </span>
+          <h2 class="text-2xl md:text-4xl font-display font-bold text-neutral-900 mt-2">Identitas Organisasi</h2>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-8">
+
+          <!-- Identitas -->
+          <div class="md:col-span-2 fade-in">
+            <div class="shadow-card overflow-hidden">
+              <div class="bg-primary-500 px-6 py-4">
+                <h3 class="text-white font-semibold text-sm uppercase tracking-wider">Data Kelembagaan</h3>
+              </div>
+              <table class="w-full text-sm">
+                <tbody>
+                  <tr class="border-b border-neutral-100">
+                    <td class="px-6 py-4 text-neutral-400 font-medium w-40">Nama Lengkap</td>
+                    <td class="px-6 py-4 text-neutral-800 font-medium">Yayasan Pengembangan Masyarakat Desa</td>
+                  </tr>
+                  <tr class="border-b border-neutral-100 bg-neutral-50">
+                    <td class="px-6 py-4 text-neutral-400 font-medium">Akronim</td>
+                    <td class="px-6 py-4 text-neutral-800 font-semibold text-primary-600">YPMD Papua</td>
+                  </tr>
+                  <tr class="border-b border-neutral-100">
+                    <td class="px-6 py-4 text-neutral-400 font-medium">Tahun Berdiri</td>
+                    <td class="px-6 py-4 text-neutral-800">8 Desember 1984</td>
+                  </tr>
+                  <tr class="border-b border-neutral-100 bg-neutral-50">
+                    <td class="px-6 py-4 text-neutral-400 font-medium">Bentuk Hukum</td>
+                    <td class="px-6 py-4 text-neutral-800">Yayasan</td>
+                  </tr>
+                  <tr class="border-b border-neutral-100">
+                    <td class="px-6 py-4 text-neutral-400 font-medium">Alamat</td>
+                    <td class="px-6 py-4 text-neutral-800">Jl. Jeruk Nipis 117 Kotaraja, Jayapura, Papua 99225</td>
+                  </tr>
+                  <tr class="border-b border-neutral-100 bg-neutral-50">
+                    <td class="px-6 py-4 text-neutral-400 font-medium">Telepon</td>
+                    <td class="px-6 py-4 text-neutral-800">0967-581071</td>
+                  </tr>
+                  <tr class="border-b border-neutral-100">
+                    <td class="px-6 py-4 text-neutral-400 font-medium">Wilayah Kerja</td>
+                    <td class="px-6 py-4 text-neutral-800">Papua, Maluku</td>
+                  </tr>
+                  <tr class="bg-neutral-50">
+                    <td class="px-6 py-4 text-neutral-400 font-medium">Jaringan</td>
+                    <td class="px-6 py-4 text-neutral-800">FOKER LSM Papua, APF (Asian People's Fund for Mutual Benefit)</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Visi Misi -->
+          <div class="flex flex-col gap-6 fade-in">
+            <div class="shadow-card p-6 border-l-4 border-primary-500">
+              <div class="flex items-center gap-2 mb-3">
+                <i class="fa-solid fa-eye text-primary-500 text-sm"></i>
+                <h3 class="text-xs font-semibold tracking-widest uppercase text-primary-500">Visi</h3>
+              </div>
+              <p class="text-neutral-700 text-sm leading-relaxed font-display italic">
+                "Menempatkan komunitas lokal (masyarakat desa) menjadi subyek pelaku pembangunan, bukan konsumen program."
+              </p>
+            </div>
+            <div class="shadow-card p-6 border-l-4 border-accent-400">
+              <div class="flex items-center gap-2 mb-3">
+                <i class="fa-solid fa-bullseye text-accent-400 text-sm"></i>
+                <h3 class="text-xs font-semibold tracking-widest uppercase text-accent-500">Misi</h3>
+              </div>
+              <p class="text-neutral-700 text-sm leading-relaxed">
+                Menggalang kekuatan dan kemampuan masyarakat dalam menangani permasalahan sosial, politik, dan ekonomi melalui: pengembangan organisasi kelompok, ekonomi pertanian, dan nilai kehidupan yang mendukung integrasi suku.
+              </p>
+            </div>
+            <div class="shadow-card p-6 bg-neutral-50">
+              <div class="flex items-center gap-2 mb-3">
+                <i class="fa-solid fa-tags text-neutral-400 text-sm"></i>
+                <h3 class="text-xs font-semibold tracking-widest uppercase text-neutral-400">Bidang Kegiatan</h3>
+              </div>
+              <div class="flex flex-wrap gap-2">
+                <span class="bg-primary-50 text-primary-700 text-xs px-3 py-1 font-medium">Advokasi</span>
+                <span class="bg-primary-50 text-primary-700 text-xs px-3 py-1 font-medium">Penelitian</span>
+                <span class="bg-accent-50 text-accent-500 text-xs px-3 py-1 font-medium">Pertanian Organik</span>
+                <span class="bg-accent-50 text-accent-500 text-xs px-3 py-1 font-medium">Lingkungan</span>
+                <span class="bg-neutral-200 text-neutral-600 text-xs px-3 py-1 font-medium">Pariwisata</span>
+                <span class="bg-neutral-200 text-neutral-600 text-xs px-3 py-1 font-medium">Seni & Budaya</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ═══════════════════════════════ SEJARAH / TIMELINE ═══════════════════════════════ -->
+    <section id="sejarah" class="py-20 bg-neutral-50">
+      <div class="max-w-6xl mx-auto px-6">
+
+        <div class="mb-12 fade-in">
+          <span class="text-xs font-semibold tracking-widest uppercase text-primary-500">
+            <i class="fa-solid fa-clock-rotate-left mr-2"></i>Perjalanan
+          </span>
+          <h2 class="text-2xl md:text-4xl font-display font-bold text-neutral-900 mt-2">Sejarah & Tonggak Penting</h2>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-12 items-start">
+
+          <!-- Timeline -->
+          <div class="timeline-wrap fade-in">
+
+            <div class="timeline-item">
+              <div class="timeline-icon bg-primary-500">
+                <i class="fa-solid fa-flag text-white text-xs"></i>
+              </div>
+              <div class="timeline-body">
+                <span class="text-xs font-bold tracking-widest uppercase text-primary-500">1980-an Awal</span>
+                <h3 class="font-display font-semibold text-neutral-900 mt-1 mb-2">Kelompok Kerja Ouikemene (KKO)</h3>
+                <p class="text-neutral-500 text-sm leading-relaxed">Cikal bakal YPMD, didirikan oleh George J. Aditjondro dan Ir. August Rumansara sebagai kerja sama Gereja Katolik (Delsos) dan GKI di Tanah Papua. Berkembang menjadi Irja DISC yang menerbitkan buletin Berita Pembangunan Desa, dengan logo desain seniman Arnold Ap.</p>
+              </div>
+            </div>
+
+            <div class="timeline-item">
+              <div class="timeline-icon bg-primary-500">
+                <i class="fa-solid fa-building text-white text-xs"></i>
+              </div>
+              <div class="timeline-body">
+                <span class="text-xs font-bold tracking-widest uppercase text-primary-500">8 Desember 1984</span>
+                <h3 class="font-display font-semibold text-neutral-900 mt-1 mb-2">YPMD Papua Berdiri</h3>
+                <p class="text-neutral-500 text-sm leading-relaxed">Didirikan untuk membuka ruang keterlibatan lebih luas bagi semua pihak. Langsung menerbitkan buletin <em>Kabar dari Kampung</em> (KdK) — pelopor jurnalisme kampung di Papua berbahasa Indonesia yang sederhana dan merakyat.</p>
+              </div>
+            </div>
+
+            <div class="timeline-item">
+              <div class="timeline-icon bg-accent-400">
+                <i class="fa-solid fa-newspaper text-white text-xs"></i>
+              </div>
+              <div class="timeline-body">
+                <span class="text-xs font-bold tracking-widest uppercase text-accent-500">1984 – 1998</span>
+                <h3 class="font-display font-semibold text-neutral-900 mt-1 mb-2">Era Buletin Kabar dari Kampung</h3>
+                <p class="text-neutral-500 text-sm leading-relaxed">KdK terbit selama 14 tahun, menjadi media alternatif kritis di Papua, melahirkan banyak jurnalis dan aktivis. Selain itu YPMD membangun saluran air bersih dan kapasitas masyarakat di kampung-kampung.</p>
+              </div>
+            </div>
+
+            <div class="timeline-item">
+              <div class="timeline-icon bg-primary-500">
+                <i class="fa-solid fa-user-tie text-white text-xs"></i>
+              </div>
+              <div class="timeline-body">
+                <span class="text-xs font-bold tracking-widest uppercase text-primary-500">1998</span>
+                <h3 class="font-display font-semibold text-neutral-900 mt-1 mb-2">Decky Rumaropen Jadi Direktur</h3>
+                <p class="text-neutral-500 text-sm leading-relaxed">Kembali ke YPMD setelah bertugas di Yayasan Rumsram (1990–1997). Di bawah kepemimpinannya, fokus bergeser ke kemandirian ekonomi masyarakat adat melalui pertanian kakao organik.</p>
+              </div>
+            </div>
+
+            <div class="timeline-item">
+              <div class="timeline-icon bg-accent-400">
+                <i class="fa-solid fa-handshake text-white text-xs"></i>
+              </div>
+              <div class="timeline-body">
+                <span class="text-xs font-bold tracking-widest uppercase text-accent-500">2009</span>
+                <h3 class="font-display font-semibold text-neutral-900 mt-1 mb-2">Kemitraan dengan APF Jepang</h3>
+                <p class="text-neutral-500 text-sm leading-relaxed">Jaringan Asian People's Fund for Mutual Benefit (APF) berkomitmen membeli bahan organik dari Papua. CV Cacao Kita dibentuk sebagai unit bisnis perdagangan kakao organik Papua.</p>
+              </div>
+            </div>
+
+            <div class="timeline-item">
+              <div class="timeline-icon bg-primary-500">
+                <i class="fa-solid fa-plane-departure text-white text-xs"></i>
+              </div>
+              <div class="timeline-body">
+                <span class="text-xs font-bold tracking-widest uppercase text-primary-500">2012</span>
+                <h3 class="font-display font-semibold text-neutral-900 mt-1 mb-2">Ekspor Kakao Organik ke Jepang</h3>
+                <p class="text-neutral-500 text-sm leading-relaxed">Kakao organik Papua pertama kali dikirim ke Jepang. Sistem perdagangan langsung tanpa perantara — petani dan konsumen bertemu langsung di kampung, laporan bulanan transparan. Café "Kakao Kita Papua" dibuka di Kotaraja, Jayapura.</p>
+              </div>
+            </div>
+
+            <div class="timeline-item">
+              <div class="timeline-icon bg-neutral-400">
+                <i class="fa-solid fa-piggy-bank text-white text-xs"></i>
+              </div>
+              <div class="timeline-body">
+                <span class="text-xs font-bold tracking-widest uppercase text-neutral-400">2014</span>
+                <h3 class="font-display font-semibold text-neutral-900 mt-1 mb-2">Program Tabungan Petani</h3>
+                <p class="text-neutral-500 text-sm leading-relaxed">Kerja sama dengan Bank BPR Phidectama Jayapura. Sebagian hasil penjualan kakao disimpan sebagai tabungan untuk biaya pendidikan anak dan modal usaha — disambut hangat kelompok petani perempuan.</p>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Chart & highlight -->
+          <div class="flex flex-col gap-6 fade-in">
+            <div class="shadow-card p-6 bg-white">
+              <h3 class="text-sm font-semibold text-neutral-600 uppercase tracking-wider mb-4">Cakupan Program Utama</h3>
+              <canvas id="programChart" height="240"></canvas>
+            </div>
+
+            <div class="shadow-card p-6 bg-white">
+              <h3 class="text-sm font-semibold text-neutral-600 uppercase tracking-wider mb-4">Dampak Kakao Organik</h3>
+              <canvas id="kakaoChart" height="200"></canvas>
+            </div>
+
+            <div class="bg-primary-500 p-6 text-white shadow-card">
+              <i class="fa-solid fa-quote-left text-primary-300 text-2xl mb-3 block"></i>
+              <p class="font-display italic text-sm leading-relaxed mb-4">
+                "Perubahan itu harus muncul dari dalam masyarakat sendiri. Hari ini masyarakat harus punya uang tunai yang cukup agar bisa menolong dirinya."
+              </p>
+              <div class="border-t border-primary-400 pt-3">
+                <span class="text-primary-200 text-xs font-semibold">— Decky Rumaropen</span>
+                <span class="text-primary-300 text-xs block">Direktur YPMD Papua</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ═══════════════════════════════ PROGRAM ═══════════════════════════════ -->
+    <section id="program" class="py-20 bg-white">
+      <div class="max-w-6xl mx-auto px-6">
+
+        <div class="mb-12 fade-in">
+          <span class="text-xs font-semibold tracking-widest uppercase text-primary-500">
+            <i class="fa-solid fa-list-check mr-2"></i>Kegiatan
+          </span>
+          <h2 class="text-2xl md:text-4xl font-display font-bold text-neutral-900 mt-2">Program Unggulan</h2>
+        </div>
+
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
+          <!-- Card 1 -->
+          <article class="shadow-card card-hover bg-white border border-neutral-100 fade-in">
+            <div class="h-1.5 bg-primary-500"></div>
+            <div class="p-6">
+              <div class="w-10 h-10 bg-primary-50 flex items-center justify-center mb-4">
+                <i class="fa-solid fa-seedling text-primary-500"></i>
+              </div>
+              <h3 class="font-display font-bold text-neutral-900 mb-2">Kakao Organik Papua</h3>
+              <p class="text-neutral-500 text-sm leading-relaxed">
+                Pengembangan dan pemasaran kakao organik melalui konsep <em>people to people trade</em> (perdagangan antar rakyat) — langsung dari petani Papua ke konsumen di Jepang tanpa perantara. Beroperasi lewat CV Cacao Kita sejak 2009.
+              </p>
+            </div>
+          </article>
+
+          <!-- Card 2 -->
+          <article class="shadow-card card-hover bg-white border border-neutral-100 fade-in">
+            <div class="h-1.5 bg-accent-400"></div>
+            <div class="p-6">
+              <div class="w-10 h-10 bg-accent-50 flex items-center justify-center mb-4">
+                <i class="fa-solid fa-users text-accent-400"></i>
+              </div>
+              <h3 class="font-display font-bold text-neutral-900 mb-2">Pendampingan Masyarakat Adat</h3>
+              <p class="text-neutral-500 text-sm leading-relaxed">
+                Mendampingi dan mengorganisir masyarakat adat Papua sebagai subjek pembangunan. Memastikan hak-hak komunitas lokal terlindungi dalam isu pertanahan, lingkungan, dan otonomi ekonomi.
+              </p>
+            </div>
+          </article>
+
+          <!-- Card 3 -->
+          <article class="shadow-card card-hover bg-white border border-neutral-100 fade-in">
+            <div class="h-1.5 bg-primary-400"></div>
+            <div class="p-6">
+              <div class="w-10 h-10 bg-primary-50 flex items-center justify-center mb-4">
+                <i class="fa-solid fa-piggy-bank text-primary-500"></i>
+              </div>
+              <h3 class="font-display font-bold text-neutral-900 mb-2">Tabungan Petani</h3>
+              <p class="text-neutral-500 text-sm leading-relaxed">
+                Program tabungan (sejak 2014) bersama Bank BPR Phidectama Jayapura. Sebagian hasil penjualan kakao ditabung untuk biaya pendidikan anak dan modal usaha — dikelola aktif oleh kelompok petani perempuan.
+              </p>
+            </div>
+          </article>
+
+          <!-- Card 4 -->
+          <article class="shadow-card card-hover bg-white border border-neutral-100 fade-in">
+            <div class="h-1.5 bg-neutral-400"></div>
+            <div class="p-6">
+              <div class="w-10 h-10 bg-neutral-100 flex items-center justify-center mb-4">
+                <i class="fa-solid fa-newspaper text-neutral-500"></i>
+              </div>
+              <h3 class="font-display font-bold text-neutral-900 mb-2">Jurnalisme Kampung</h3>
+              <p class="text-neutral-500 text-sm leading-relaxed">
+                Pelopor jurnalisme akar rumput di Papua melalui buletin <em>Kabar dari Kampung</em> (1984–1998). Melatih aktivis dan warga menulis berita dari lapangan, melahirkan banyak jurnalis dan tokoh masyarakat sipil Papua.
+              </p>
+            </div>
+          </article>
+
+          <!-- Card 5 -->
+          <article class="shadow-card card-hover bg-white border border-neutral-100 fade-in">
+            <div class="h-1.5 bg-primary-500"></div>
+            <div class="p-6">
+              <div class="w-10 h-10 bg-primary-50 flex items-center justify-center mb-4">
+                <i class="fa-solid fa-droplet text-primary-500"></i>
+              </div>
+              <h3 class="font-display font-bold text-neutral-900 mb-2">Air Bersih & Infrastruktur Kampung</h3>
+              <p class="text-neutral-500 text-sm leading-relaxed">
+                Pembangunan saluran air bersih dan pengembangan kapasitas masyarakat kampung, terutama aktif di era 1980-an hingga 1990-an, sebagai bagian dari program pembangunan masyarakat desa.
+              </p>
+            </div>
+          </article>
+
+          <!-- Card 6 -->
+          <article class="shadow-card card-hover bg-white border border-neutral-100 fade-in">
+            <div class="h-1.5 bg-accent-400"></div>
+            <div class="p-6">
+              <div class="w-10 h-10 bg-accent-50 flex items-center justify-center mb-4">
+                <i class="fa-solid fa-magnifying-glass-chart text-accent-400"></i>
+              </div>
+              <h3 class="font-display font-bold text-neutral-900 mb-2">Riset & Advokasi Kebijakan</h3>
+              <p class="text-neutral-500 text-sm leading-relaxed">
+                Penelitian dan advokasi isu-isu sosial, ekonomi, dan lingkungan yang memengaruhi masyarakat adat Papua. Termasuk analisis gender dalam pemanfaatan hasil pertanian dan pengembangan kebijakan pertanian organik.
+              </p>
+            </div>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ═══════════════════════════════ TOKOH PENTING ═══════════════════════════════ -->
+    <section id="tokoh" class="py-20 bg-neutral-50">
+      <div class="max-w-6xl mx-auto px-6">
+
+        <div class="mb-12 fade-in">
+          <span class="text-xs font-semibold tracking-widest uppercase text-primary-500">
+            <i class="fa-solid fa-person-chalkboard mr-2"></i>Orang-orang
+          </span>
+          <h2 class="text-2xl md:text-4xl font-display font-bold text-neutral-900 mt-2">Tokoh Kunci YPMD Papua</h2>
+        </div>
+
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
+          <article class="bg-white shadow-card card-hover fade-in">
+            <img src="https://placehold.co/600x400/EEE/31343C" alt="" class="w-full h-44 object-cover"/>
+            <div class="p-6">
+              <h3 class="font-display font-bold text-neutral-900 text-lg">Decky Rumaropen</h3>
+              <span class="text-xs font-semibold text-primary-500 uppercase tracking-wider">Direktur (1998 – 2022)</span>
+              <p class="text-neutral-500 text-sm leading-relaxed mt-3">
+                Alumnus FISIP Universitas Cenderawasih, bergabung YPMD sejak 1988. Penggerak utama kakao organik Papua dan konsep <em>people to people trade</em>. Salah satu pendiri FOKER LSM Papua. Wafat 26 Juli 2022 pada usia 63 tahun.
+              </p>
+            </div>
+          </article>
+
+          <article class="bg-white shadow-card card-hover fade-in">
+            <img src="https://placehold.co/600x400/EEE/31343C" alt="" class="w-full h-44 object-cover"/>
+            <div class="p-6">
+              <h3 class="font-display font-bold text-neutral-900 text-lg">George Junus Aditjondro</h3>
+              <span class="text-xs font-semibold text-accent-500 uppercase tracking-wider">Pendiri & Direktur Pertama</span>
+              <p class="text-neutral-500 text-sm leading-relaxed mt-3">
+                Mantan jurnalis majalah Tempo, pelopor jurnalisme kampung di Papua sejak 1984. Inisiator buletin <em>Kabar dari Kampung</em>. Mendirikan YPMD bersama August Rumansara. Wafat 10 Desember 2016.
+              </p>
+            </div>
+          </article>
+
+          <article class="bg-white shadow-card card-hover fade-in">
+            <img src="https://placehold.co/600x400/EEE/31343C" alt="" class="w-full h-44 object-cover"/>
+            <div class="p-6">
+              <h3 class="font-display font-bold text-neutral-900 text-lg">Ir. August Rumansara</h3>
+              <span class="text-xs font-semibold text-neutral-400 uppercase tracking-wider">Ko-Pendiri</span>
+              <p class="text-neutral-500 text-sm leading-relaxed mt-3">
+                Bersama George Aditjondro, membangun gerakan masyarakat sipil Papua sejak era 1980-an melalui KKO dan Irja DISC sebelum mendirikan YPMD pada 1984.
+              </p>
+            </div>
+          </article>
+
+        </div>
+
+        <!-- Warisan -->
+        <div class="mt-10 bg-white shadow-card p-6 fade-in">
+          <h3 class="text-sm font-semibold uppercase tracking-wider text-neutral-500 mb-4">
+            <i class="fa-solid fa-star text-accent-400 mr-2"></i>Tokoh yang Terlahir dari YPMD
+          </h3>
+          <div class="grid sm:grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+            <div class="border border-neutral-100 p-4">
+              <div class="font-semibold text-neutral-800">Christian Warinussy</div>
+              <div class="text-neutral-400 text-xs mt-1">Pendiri LP3BH Manokwari, mantan wartawan Cenderawasih Pos</div>
+            </div>
+            <div class="border border-neutral-100 p-4">
+              <div class="font-semibold text-neutral-800">Markus You</div>
+              <div class="text-neutral-400 text-xs mt-1">Redaktur Suara Papua.com, alumni pelatihan KdK</div>
+            </div>
+            <div class="border border-neutral-100 p-4">
+              <div class="font-semibold text-neutral-800">Bambang Widjayanto</div>
+              <div class="text-neutral-400 text-xs mt-1">Direktur pertama LBH Papua (kemudian Komisioner KPK)</div>
+            </div>
+            <div class="border border-neutral-100 p-4">
+              <div class="font-semibold text-neutral-800">Pastor Neles Tebay</div>
+              <div class="text-neutral-400 text-xs mt-1">Kontributor buletin Kabar dari Kampung</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- ═══════════════════════════════ GALERI ═══════════════════════════════ -->
+    <section id="galeri" class="py-20 bg-white">
+      <div class="max-w-6xl mx-auto px-6">
+        <div class="mb-12 fade-in">
+          <span class="text-xs font-semibold tracking-widest uppercase text-primary-500">
+            <i class="fa-solid fa-images mr-2"></i>Dokumentasi
+          </span>
+          <h2 class="text-2xl md:text-4xl font-display font-bold text-neutral-900 mt-2">Galeri Kegiatan</h2>
+        </div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 fade-in">
+          <img src="https://placehold.co/600x400/EEE/31343C" alt="" class="w-full h-40 object-cover"/>
+          <img src="https://placehold.co/600x400/EEE/31343C" alt="" class="w-full h-40 object-cover"/>
+          <img src="https://placehold.co/600x400/EEE/31343C" alt="" class="w-full h-40 object-cover"/>
+          <img src="https://placehold.co/600x400/EEE/31343C" alt="" class="w-full h-40 object-cover"/>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ═══════════════════════════════ KONTAK ═══════════════════════════════ -->
+    <section id="kontak" class="py-20 bg-neutral-50">
+      <div class="max-w-6xl mx-auto px-6">
+
+        <div class="mb-12 fade-in">
+          <span class="text-xs font-semibold tracking-widest uppercase text-primary-500">
+            <i class="fa-solid fa-envelope mr-2"></i>Hubungi Kami
+          </span>
+          <h2 class="text-2xl md:text-4xl font-display font-bold text-neutral-900 mt-2">Kontak & Lokasi</h2>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-8">
+
+          <div class="fade-in flex flex-col gap-4">
+            <div class="bg-white shadow-card p-5 flex items-start gap-4">
+              <div class="w-10 h-10 bg-primary-50 flex items-center justify-center flex-shrink-0">
+                <i class="fa-solid fa-location-dot text-primary-500"></i>
+              </div>
+              <div>
+                <div class="text-xs font-semibold uppercase tracking-wider text-neutral-400 mb-1">Alamat</div>
+                <p class="text-neutral-700 text-sm">Jl. Jeruk Nipis 117 Kotaraja (Furia),<br/>Jayapura, Papua 99225</p>
+              </div>
+            </div>
+
+            <div class="bg-white shadow-card p-5 flex items-start gap-4">
+              <div class="w-10 h-10 bg-primary-50 flex items-center justify-center flex-shrink-0">
+                <i class="fa-solid fa-phone text-primary-500"></i>
+              </div>
+              <div>
+                <div class="text-xs font-semibold uppercase tracking-wider text-neutral-400 mb-1">Telepon</div>
+                <p class="text-neutral-700 text-sm">0967-581071</p>
+              </div>
+            </div>
+
+            <div class="bg-white shadow-card p-5 flex items-start gap-4">
+              <div class="w-10 h-10 bg-accent-50 flex items-center justify-center flex-shrink-0">
+                <i class="fa-solid fa-mug-hot text-accent-400"></i>
+              </div>
+              <div>
+                <div class="text-xs font-semibold uppercase tracking-wider text-neutral-400 mb-1">Kafe Kakao Kita Papua</div>
+                <p class="text-neutral-700 text-sm">Di samping Kantor YPMD, Kotaraja, Jayapura.<br/>Nikmati produk coklat langsung dari petani Papua.</p>
+              </div>
+            </div>
+
+            <div class="bg-white shadow-card p-5 flex items-start gap-4">
+              <div class="w-10 h-10 bg-primary-50 flex items-center justify-center flex-shrink-0">
+                <i class="fa-solid fa-network-wired text-primary-500"></i>
+              </div>
+              <div>
+                <div class="text-xs font-semibold uppercase tracking-wider text-neutral-400 mb-1">Jaringan</div>
+                <p class="text-neutral-700 text-sm">FOKER LSM Papua<br/>APF (Asian People's Fund for Mutual Benefit)</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Peta placeholder -->
+          <div class="fade-in">
+            <div class="w-full h-full min-h-64 bg-neutral-200 shadow-card flex items-center justify-center">
+              <div class="text-center text-neutral-400">
+                <i class="fa-solid fa-map text-4xl mb-3 block"></i>
+                <p class="text-sm">Peta lokasi YPMD Papua</p>
+                <p class="text-xs mt-1">Jl. Jeruk Nipis 117, Kotaraja, Jayapura</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+
+  <!-- ═══════════════════════════════ FOOTER ═══════════════════════════════ -->
+  <footer class="bg-neutral-900 text-neutral-300">
+
+    <!-- Footer Main -->
+    <div class="max-w-6xl mx-auto px-6 py-14 grid sm:grid-cols-2 md:grid-cols-3 gap-10">
+
+      <div>
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-8 h-8 bg-primary-500 flex items-center justify-center">
+            <i class="fa-solid fa-seedling text-white text-xs"></i>
+          </div>
+          <span class="font-display font-bold text-white text-base">YPMD Papua</span>
+        </div>
+        <p class="text-neutral-400 text-sm leading-relaxed">
+          Mendampingi masyarakat desa Papua menuju kemandirian ekonomi dan keadilan sosial sejak 1984.
+        </p>
+      </div>
+
+      <div>
+        <h4 class="text-white text-xs font-semibold uppercase tracking-widest mb-4">Navigasi</h4>
+        <ul class="space-y-2 text-sm">
+          <li><a href="#beranda"  class="hover:text-white transition-colors">Beranda</a></li>
+          <li><a href="#profil"   class="hover:text-white transition-colors">Profil Lembaga</a></li>
+          <li><a href="#sejarah"  class="hover:text-white transition-colors">Sejarah</a></li>
+          <li><a href="#program"  class="hover:text-white transition-colors">Program</a></li>
+          <li><a href="#tokoh"    class="hover:text-white transition-colors">Tokoh Kunci</a></li>
+          <li><a href="#kontak"   class="hover:text-white transition-colors">Kontak</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="text-white text-xs font-semibold uppercase tracking-widest mb-4">Program Unggulan</h4>
+        <ul class="space-y-2 text-sm">
+          <li class="flex items-center gap-2"><i class="fa-solid fa-seedling text-primary-400 text-xs w-4"></i> Kakao Organik Papua</li>
+          <li class="flex items-center gap-2"><i class="fa-solid fa-users text-primary-400 text-xs w-4"></i> Pendampingan Masyarakat Adat</li>
+          <li class="flex items-center gap-2"><i class="fa-solid fa-piggy-bank text-primary-400 text-xs w-4"></i> Tabungan Petani</li>
+          <li class="flex items-center gap-2"><i class="fa-solid fa-newspaper text-primary-400 text-xs w-4"></i> Jurnalisme Kampung</li>
+          <li class="flex items-center gap-2"><i class="fa-solid fa-droplet text-primary-400 text-xs w-4"></i> Air Bersih Kampung</li>
+        </ul>
+      </div>
+
+    </div>
+
+    <!-- Disclaimer -->
+    <div class="border-t border-neutral-800">
+      <div class="max-w-6xl mx-auto px-6 py-8">
+        <h4 class="text-white text-xs font-semibold uppercase tracking-widest mb-3">
+          <i class="fa-solid fa-circle-info text-neutral-500 mr-2"></i>Disclaimer
+        </h4>
+        <p class="text-neutral-500 text-xs leading-relaxed max-w-3xl">
+          Halaman ini merupakan <strong class="text-neutral-400">draft desain penawaran</strong> yang dibuat berdasarkan hasil analisa tim pengembang <a href="https://nokensoft.com" target="_blank" rel="noopener" class="text-primary-400 hover:text-primary-300 underline">Nokensoft.com</a>. Seluruh konten bersifat prototipe, belum merupakan produk final, dan disusun berdasarkan data publik yang tersedia. Informasi dapat berubah sesuai arahan dan persetujuan pihak lembaga. Untuk data resmi dan terkini, silakan hubungi langsung YPMD Papua.
+        </p>
+      </div>
+    </div>
+
+    <!-- Sumber Informasi -->
+    <div class="border-t border-neutral-800">
+      <div class="max-w-6xl mx-auto px-6 py-8">
+        <h4 class="text-white text-xs font-semibold uppercase tracking-widest mb-4">
+          <i class="fa-solid fa-book-open text-neutral-500 mr-2"></i>Sumber Informasi
+        </h4>
+        <div class="grid sm:grid-cols-3 gap-4 text-xs text-neutral-500">
+          <div class="border border-neutral-800 p-4">
+            <div class="text-neutral-300 font-semibold mb-1">Mongabay Indonesia</div>
+            <p class="leading-relaxed">
+              "Mengenang Decky Rumaropen, Penggerak Kemandirian Ekonomi Orang Papua" — 31 Juli 2022.<br/>
+              <span class="text-neutral-600">mongabay.co.id</span>
+            </p>
+          </div>
+          <div class="border border-neutral-800 p-4">
+            <div class="text-neutral-300 font-semibold mb-1">NGO Database SMERU</div>
+            <p class="leading-relaxed">
+              Profil Yayasan Pengembangan Masyarakat Desa (YPMD), entri #627.<br/>
+              <span class="text-neutral-600">ngodata.smeru.or.id</span>
+            </p>
+          </div>
+          <div class="border border-neutral-800 p-4">
+            <div class="text-neutral-300 font-semibold mb-1">Jubi – Berita Papua</div>
+            <p class="leading-relaxed">
+              "36 Tahun YPMD dan Perintis Jurnalis Kampung di Tanah Papua" — 9 Desember 2020.<br/>
+              <span class="text-neutral-600">arsip.jubi.id</span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Copyright -->
+    <div class="border-t border-neutral-800">
+      <div class="max-w-6xl mx-auto px-6 py-5 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <p class="text-neutral-600 text-xs">© 2024 YPMD Papua. Berdiri sejak 8 Desember 1984.</p>
+        <p class="text-neutral-700 text-xs flex items-center gap-2">
+          <i class="fa-solid fa-code text-neutral-600"></i>
+          Draft desain penawaran oleh
+          <a href="https://nokensoft.com" target="_blank" rel="noopener" class="text-primary-400 hover:text-primary-300 font-semibold transition-colors">Nokensoft.com</a>
+        </p>
+      </div>
+    </div>
+
+  </footer>
+
+
+  <!-- ═══════════════════════════════ SCRIPTS ═══════════════════════════════ -->
+  <script>
+    // ── Fade-in on scroll ──
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12 });
+
+    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+    // ── Chart: Program ──
+    const ctxProg = document.getElementById('programChart').getContext('2d');
+    new Chart(ctxProg, {
+      type: 'doughnut',
+      data: {
+        labels: ['Kakao Organik', 'Pendampingan Adat', 'Jurnalisme Kampung', 'Air Bersih', 'Riset & Advokasi'],
+        datasets: [{
+          data: [35, 25, 15, 12, 13],
+          backgroundColor: ['#2d8057', '#4fa174', '#c9972a', '#82c19e', '#e8bc4f'],
+          borderWidth: 0,
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: { font: { family: 'Plus Jakarta Sans', size: 14 }, padding: 14, boxWidth: 12 }
+          }
+        },
+        cutout: '60%'
+      }
+    });
+
+    // ── Chart: Kakao Timeline ──
+    const ctxKakao = document.getElementById('kakaoChart').getContext('2d');
+    new Chart(ctxKakao, {
+      type: 'bar',
+      data: {
+        labels: ['2009', '2010', '2011', '2012', '2013', '2014', '2015+'],
+        datasets: [{
+          label: 'Perkembangan Program',
+          data: [20, 35, 50, 70, 78, 88, 100],
+          backgroundColor: '#2d8057',
+          borderWidth: 0,
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: ctx => ` Indeks perkembangan: ${ctx.raw}`
+            }
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            max: 110,
+            ticks: { font: { family: 'Plus Jakarta Sans', size: 14 } },
+            grid: { color: '#f0f0f0' }
+          },
+          x: {
+            ticks: { font: { family: 'Plus Jakarta Sans', size: 14 } },
+            grid: { display: false }
+          }
+        }
+      }
+    });
+  </script>
+
+</body>
+</html>
