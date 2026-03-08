@@ -3,7 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="robots" content="noindex, nofollow"/>
   <title>YPMD Papua — Yayasan Pengembangan Masyarakat Desa</title>
+  <link rel="icon" href="./img/logo-sample.png"/>
 
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -291,9 +293,10 @@
     <nav class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
 
       <!-- Logo + Title -->
-      <a href="#beranda" class="flex items-center gap-3 flex-shrink-0">
-        <div class="w-9 h-9 bg-primary-500 flex items-center justify-center">
-          <i class="fa-solid fa-seedling text-white text-sm"></i>
+      <a href="#beranda" class="hidden md:flex items-center gap-3 flex-shrink-0">
+        <div class="w-9 h-9 flex items-center justify-center">
+          <!-- <i class="fa-solid fa-seedling text-white text-sm"></i> -->
+          <img src="./img/logo-sample.png" alt="">
         </div>
         <div class="hidden sm:block">
           <span class="font-display font-bold text-primary-700 text-base leading-tight block">YPMD Papua</span>
@@ -313,8 +316,9 @@
 
       <!-- Mobile: Logo center + Hamburger right -->
       <div class="md:hidden absolute left-1/2 -translate-x-1/2 flex items-center gap-2">
-        <div class="w-7 h-7 bg-primary-500 flex items-center justify-center">
-          <i class="fa-solid fa-seedling text-white text-xs"></i>
+        <div class="w-7 h-7 flex items-center justify-center">
+          <!-- <i class="fa-solid fa-seedling text-white text-xs"></i> -->
+          <img src="./img/logo-sample.png" alt="">
         </div>
         <span class="font-display font-bold text-primary-700 text-sm">YPMD Papua</span>
       </div>
@@ -382,9 +386,9 @@
 
         <div class="fade-in">
           <img
-            src="https://placehold.co/600x400/EEE/31343C"
+            src="./img/mockups/mockup-ypmd.png"
             alt=""
-            class="w-full object-cover shadow-card"
+            class="w-full object-cover"
           />
         </div>
       </div>
@@ -752,7 +756,9 @@
         <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
 
           <article class="bg-white shadow-card card-hover fade-in">
-            <img src="https://placehold.co/600x400/EEE/31343C" alt="" class="w-full h-44 object-cover"/>
+            <div class="relative w-full pt-[100%] overflow-hidden">  
+              <img src="./img/avatar-decky-rumaropen.png" alt="" class="absolute inset-0 w-full h-full object-cover"/>
+            </div>
             <div class="p-6">
               <h3 class="font-display font-bold text-neutral-900 text-lg">Decky Rumaropen</h3>
               <span class="text-xs font-semibold text-primary-500 uppercase tracking-wider">Direktur (1998 – 2022)</span>
@@ -763,7 +769,9 @@
           </article>
 
           <article class="bg-white shadow-card card-hover fade-in">
-            <img src="https://placehold.co/600x400/EEE/31343C" alt="" class="w-full h-44 object-cover"/>
+            <div class="relative w-full pt-[100%] overflow-hidden">  
+              <img src="./img/avatar-george-junus-aditjondro.png" alt="" class="absolute inset-0 w-full h-full object-cover"/>
+            </div>
             <div class="p-6">
               <h3 class="font-display font-bold text-neutral-900 text-lg">George Junus Aditjondro</h3>
               <span class="text-xs font-semibold text-accent-500 uppercase tracking-wider">Pendiri & Direktur Pertama</span>
@@ -774,7 +782,9 @@
           </article>
 
           <article class="bg-white shadow-card card-hover fade-in">
-            <img src="https://placehold.co/600x400/EEE/31343C" alt="" class="w-full h-44 object-cover"/>
+            <div class="relative w-full pt-[100%] overflow-hidden">  
+              <img src="https://placehold.co/600x400/EEE/31343C" alt="" class="absolute inset-0 w-full h-full object-cover"/>
+            </div>
             <div class="p-6">
               <h3 class="font-display font-bold text-neutral-900 text-lg">Ir. August Rumansara</h3>
               <span class="text-xs font-semibold text-neutral-400 uppercase tracking-wider">Ko-Pendiri</span>
@@ -825,10 +835,11 @@
           <h2 class="text-2xl md:text-4xl font-display font-bold text-neutral-900 mt-2">Galeri Kegiatan</h2>
         </div>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 fade-in">
-          <img src="https://placehold.co/600x400/EEE/31343C" alt="" class="w-full h-40 object-cover"/>
-          <img src="https://placehold.co/600x400/EEE/31343C" alt="" class="w-full h-40 object-cover"/>
-          <img src="https://placehold.co/600x400/EEE/31343C" alt="" class="w-full h-40 object-cover"/>
-          <img src="https://placehold.co/600x400/EEE/31343C" alt="" class="w-full h-40 object-cover"/>
+          <img src="./img/anak-anak-mendayung.png" alt="" class="w-full h-40 object-cover"/>
+          <img src="./img/pahatan-kayu-sentani.png" alt="" class="w-full h-40 object-cover"/>
+          <img src="./img/rumput-mei-wamena.png" alt="" class="w-full h-40 object-cover"/>
+          <img src="./img/honai.png" alt="" class="w-full h-40 object-cover"/>
+          <img src="./img/rumah-adat.png" alt="" class="w-full h-40 object-cover"/>
         </div>
       </div>
     </section>
@@ -892,11 +903,12 @@
           <!-- Peta placeholder -->
           <div class="fade-in">
             <div class="w-full h-full min-h-64 bg-neutral-200 shadow-card flex items-center justify-center">
-              <div class="text-center text-neutral-400">
+              <!-- <div class="text-center text-neutral-400">
                 <i class="fa-solid fa-map text-4xl mb-3 block"></i>
                 <p class="text-sm">Peta lokasi YPMD Papua</p>
                 <p class="text-xs mt-1">Jl. Jeruk Nipis 117, Kotaraja, Jayapura</p>
-              </div>
+              </div> -->
+              <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3985.7292167261926!2d140.67387397405315!3d-2.5942523973837863!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x686cf5f6f988a501%3A0x46658cf19a11d8d0!2sYPMD%20Papua!5e0!3m2!1sen!2sid!4v1772952435449!5m2!1sen!2sid" width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
             </div>
           </div>
 
@@ -915,8 +927,9 @@
 
       <div>
         <div class="flex items-center gap-3 mb-4">
-          <div class="w-8 h-8 bg-primary-500 flex items-center justify-center">
-            <i class="fa-solid fa-seedling text-white text-xs"></i>
+          <div class="w-8 h-8 flex items-center justify-center">
+            <!-- <i class="fa-solid fa-seedling text-white text-xs"></i> -->
+             <img src="./img/logo-sample.png" alt="">
           </div>
           <span class="font-display font-bold text-white text-base">YPMD Papua</span>
         </div>
@@ -1009,6 +1022,56 @@
   </footer>
 
 
+  <!-- ═══════════════════════════════ FLOATING BUTTONS ═══════════════════════════════ -->
+  <div class="fixed bottom-6 right-5 z-50 flex flex-col items-center gap-3">
+
+    <!-- Usulan Aplikasi -->
+    <a
+      href="usulan-aplikasi-ypmd.html"
+      target="_blank"
+      rel="noopener"
+      title="Lihat Usulan Aplikasi"
+      class="flex items-center gap-2 bg-primary-500 hover:bg-primary-600 text-white text-xs font-semibold px-4 py-2.5 shadow-lg transition-colors duration-200 whitespace-nowrap"
+    >
+      <i class="fa-solid fa-mobile-screen-button text-sm"></i>
+      <span>Usulan Aplikasi</span>
+    </a>
+
+    <!-- Back to Top -->
+    <button
+      id="btnTop"
+      onclick="window.scrollTo({ top: 0, behavior: 'smooth' })"
+      title="Kembali ke atas"
+      class="w-11 h-11 bg-neutral-700 hover:bg-neutral-900 text-white flex items-center justify-center shadow-lg transition-all duration-300 opacity-0 translate-y-4 pointer-events-none"
+    >
+      <i class="fa-solid fa-chevron-up text-sm"></i>
+    </button>
+
+    <!-- WhatsApp -->
+    <a
+      href="https://wa.me/6282199558191"
+      target="_blank"
+      rel="noopener"
+      title="Hubungi via WhatsApp"
+      class="w-11 h-11 bg-[#25D366] hover:bg-[#1ebe5d] text-white flex items-center justify-center shadow-lg transition-colors duration-200"
+    >
+      <i class="fa-brands fa-whatsapp text-xl"></i>
+    </a>
+
+    <!-- Instagram -->
+    <a
+      href="https://instagram.com/ypmdpapua"
+      target="_blank"
+      rel="noopener"
+      title="Instagram YPMD Papua"
+      class="w-11 h-11 text-white flex items-center justify-center shadow-lg transition-opacity duration-200 hover:opacity-90"
+      style="background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);"
+    >
+      <i class="fa-brands fa-instagram text-xl"></i>
+    </a>
+
+  </div>
+
   <!-- ═══════════════════════════════ SCRIPTS ═══════════════════════════════ -->
   <script>
     // ── Fade-in on scroll ──
@@ -1022,6 +1085,18 @@
     }, { threshold: 0.12 });
 
     document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+    // ── Back to Top visibility ──
+    const btnTop = document.getElementById('btnTop');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 300) {
+        btnTop.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none');
+        btnTop.classList.add('opacity-100', 'translate-y-0');
+      } else {
+        btnTop.classList.add('opacity-0', 'translate-y-4', 'pointer-events-none');
+        btnTop.classList.remove('opacity-100', 'translate-y-0');
+      }
+    });
 
     // ── Chart: Program ──
     const ctxProg = document.getElementById('programChart').getContext('2d');
